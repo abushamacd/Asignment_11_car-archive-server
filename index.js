@@ -9,7 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 // Connect DB
-
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.eehys.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -17,12 +16,23 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
-client.connect((err) => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  console.log("DB Connected");
-  client.close();
-});
+
+async function run() {
+  try {
+    await client.connect();
+    const inventoryCollection = client.db("carArchive").collection("inventory");
+    //   Get all data
+    app.get("/inventory", async (req, res) => {
+      const query = {};
+      const cursor = inventoryCollection.find(query);
+      const inventoris = await cursor.toArray();
+      res.send(inventoris);
+    });
+  } finally {
+    // await client.close();
+  }
+}
+run().catch(console.dir);
 
 app.get("/", (req, res) => {
   res.send("Car Archive sever running");
