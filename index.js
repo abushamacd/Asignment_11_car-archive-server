@@ -35,6 +35,25 @@ async function run() {
       const inventory = await inventoryCollection.findOne(query);
       res.send(inventory);
     });
+
+    // Update by delivery button
+    app.put("/inventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateQuantity = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: updateQuantity.quantity,
+        },
+      };
+      const result = await inventoryCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
   } finally {
     // await client.close();
   }
