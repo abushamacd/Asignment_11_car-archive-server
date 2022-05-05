@@ -36,7 +36,7 @@ async function run() {
       res.send(inventory);
     });
 
-    // Update by delivery button
+    // Update quantity by delivery & restock button
     app.put("/inventory/:id", async (req, res) => {
       const id = req.params.id;
       const updateQuantity = req.body;
@@ -52,6 +52,13 @@ async function run() {
         updateDoc,
         options
       );
+      res.send(result);
+    });
+
+    // Add item to DB
+    app.post("/inventory", async (req, res) => {
+      const newService = req.body;
+      const result = await inventoryCollection.insertOne(newService);
       res.send(result);
     });
   } finally {
