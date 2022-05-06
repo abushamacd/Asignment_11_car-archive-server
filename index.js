@@ -23,7 +23,13 @@ async function run() {
     const inventoryCollection = client.db("carArchive").collection("inventory");
     //   Get all data
     app.get("/inventory", async (req, res) => {
-      const query = {};
+      // Filter by email
+      const email = req.query.email;
+      let query = {};
+      if (email) {
+        query = { email: email };
+      }
+      // const query = {};
       const cursor = inventoryCollection.find(query);
       const inventoris = await cursor.toArray();
       res.send(inventoris);
